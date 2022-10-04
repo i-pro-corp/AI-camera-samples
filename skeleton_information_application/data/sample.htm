@@ -1,0 +1,177 @@
+<!--
+Copyright 2022 i-PRO Co., Ltd.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+[Abstract]
+    Skelton information application
+    骨格情報活用アプリケーション
+
+[Details]
+    Analyze the skeleton information collected from VP skeleton detection and light up the patrol light.
+    VP骨格検出から収集した骨格情報を分析してパトライトを光らせる。
+
+[In working order (動作確認済み機器)]
+    Module Camera: MK-DVASTNP01, MK-DVLTRNP01
+    PATLITE:       NHP-3FB2-RYG, NHV4-3DP-RYG
+
+[Author]
+    Arai Takamitsu (i-PRO) and Ichiken
+-->
+
+<html>
+<head>
+<style type="text/css">
+<!--
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    overflow: hidden;
+}
+.viewarea {
+    position: relative;
+    width:  100vw;
+    height: 100vh;
+
+    background-color: #000000;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+-->
+</style>
+</head>
+<script>
+var firstflg = 0;
+// WebSocketClient:Start
+function onReceive(){
+	var ws = new WebSocket("ws://" + document.domain + ":8081/echo");
+	ws.onopen = function(){
+	};
+	ws.onmessage = function(evt){
+		onReceivemessage(evt.data);
+	};
+}
+// WebSocketClient:ReceiveData
+function onReceivemessage(str){
+	var inbox = document.getElementById('inbox');
+	inbox.innerHTML="";
+
+	let result = JSON.parse(str);
+	if(firstflg == 0){
+		var imagesheet = document.getElementById('box');
+		imagesheet.style.backgroundImage = "url(/cgi-bin/mjpeg?framerate=10&resolution=1920x1080)";
+		firstflg = 1;
+	}
+
+	// Adjust window sclale
+	var ratio = document.documentElement.clientWidth * 1080 / document.documentElement.clientHeight / 1920;
+	var baseWidth = 100;
+	var baseHeight = 100;
+	if ( ratio > 1 ){
+		baseWidth /= ratio;
+	} else {
+		baseHeight *= ratio;
+	}
+
+	// View skelton infomation
+	function drawpoint(x,y,i){
+		var box0 = document.createElement("div");
+		box0.style.position = "absolute";
+		box0.style.left = ((x-3) * baseWidth / 1280) + "%";
+		box0.style.top = ((y-3) * baseHeight / 720) + "%";
+		box0.style.width = (6 * baseWidth / 1280) + "%";
+		box0.style.height = (6 * baseHeight / 720) + "%";
+		box0.style.color = "c60019";
+		box0.style.border = "2px solid #c60019";
+		inbox.appendChild(box0);
+	}
+	if(typeof result.persons[0].body.nose !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.nose.x-3,result.persons[0].body.nose.y-3,0);
+	}
+	if(typeof result.persons[0].body.eye_left !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.eye_left.x-3,result.persons[0].body.eye_left.y-3,0);
+	}
+	if(typeof result.persons[0].body.eye_right !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.eye_right.x-3,result.persons[0].body.eye_right.y-3,0);
+	}
+	if(typeof result.persons[0].body.ear_left !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.ear_left.x-3,result.persons[0].body.ear_left.y-3,0);
+	}
+	if(typeof result.persons[0].body.ear_right !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.ear_right.x-3,result.persons[0].body.ear_right.y-3,0);
+	}
+	if(typeof result.persons[0].body.shoulder_left !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.shoulder_left.x-3,result.persons[0].body.shoulder_left.y-3,0);
+	}
+	if(typeof result.persons[0].body.shoulder_right !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.shoulder_right.x-3,result.persons[0].body.shoulder_right.y-3,0);
+	}
+	if(typeof result.persons[0].body.elbow_left !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.elbow_left.x-3,result.persons[0].body.elbow_left.y-3,0);
+	}
+	if(typeof result.persons[0].body.elbow_right !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.elbow_right.x-3,result.persons[0].body.elbow_right.y-3,0);
+	}
+	if(typeof result.persons[0].body.wrist_left !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.wrist_left.x-3,result.persons[0].body.wrist_left.y-3,0);
+	}
+	if(typeof result.persons[0].body.wrist_right !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.wrist_right.x-3,result.persons[0].body.wrist_right.y-3,0);
+	}
+	if(typeof result.persons[0].body.hip_left !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.hip_left.x-3,result.persons[0].body.hip_left.y-3,0);
+	}
+	if(typeof result.persons[0].body.hip_right !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.hip_right.x-3,result.persons[0].body.hip_right.y-3,0);
+	}
+	if(typeof result.persons[0].body.knee_left !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.knee_left.x-3,result.persons[0].body.knee_left.y-3,0);
+	}
+	if(typeof result.persons[0].body.knee_right !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.knee_right.x-3,result.persons[0].body.knee_right.y-3,0);
+	}
+	if(typeof result.persons[0].body.ankle_left !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.ankle_left.x-3,result.persons[0].body.ankle_left.y-3,0);
+	}
+	if(typeof result.persons[0].body.ankle_right !== 'undefined')
+	{
+		drawpoint(result.persons[0].body.ankle_right.x-3,result.persons[0].body.ankle_right.y-3,0);	
+	}
+}
+</script>
+
+<body onload="onReceive()">
+<div class="viewarea" id="box">
+    <div class="inviewarea" id="inbox">
+    </div>
+</div>
+</body>
+</html>
